@@ -50,13 +50,8 @@ const scrape = db => {
   const findAndUpdateMembers = async () => {
     let r = await col.find({}).toArray();
     console.log(r);
-    for (let i = 0; i < r.length; i++) {
-      const element = r[i];
-      let r2 = await scrapers.birthdayScraper(
-        `https://www.fupa.net${element.link}`
-      );
-      console.log(r2);
-    }
+    let r2 = await scrapers.birthdayScraper(r);
+    console.log(r2);
   };
 
   /* for (let i = 0; i < r.length; i++) {

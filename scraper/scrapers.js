@@ -134,41 +134,46 @@ const spielerScraper = url => {
   });
 };
 
-const birthdayScraper = url => {
+const birthdayScraper = arr => {
   return new Promise(async (resolve, reject) => {
     try {
       const browser = await puppeteer.launch();
       const page = await browser.newPage();
-      await page.goto(url);
+      let results = [];
+      for (let i = 0; i < arr.length; i++) {
+        const element = arr[i];
+        await page.goto(`https://www.fupa.net${element.link}`);
 
-      let birthday = await page.evaluate(() => {
-        let results = [];
-        function obj() {
-          (this.fupa_id = null), (this.geburtsdatum = null);
-        }
-
-        let items = document.querySelectorAll(
-          "td.stammdaten > table > tbody > tr > td"
-        );
-
-        let objElement = new obj();
-        let baseURI = items[0].baseURI;
-        let start = baseURI.lastIndexOf("-") + 1;
-        let end = baseURI.indexOf(".html");
-        let fupa_id = baseURI.substring(start, end);
-        objElement.fupa_id = fupa_id;
-
-        for (let i = 0; i < items.length; i++) {
-          let element = items[i];
-          let j = i;
-          if (element.innerHTML === "Geburtsdatum:") {
-            objElement.geburtsdatum = items[j + 1].innerHTML;
-            results.push(objElement);
+        let birthday = await page.evaluate(() => {
+          let results = [];
+          function obj() {
+            (this.fupa_id = null), (this.geburtsdatum = null);
           }
-        }
-        return results;
-      });
-      resolve(birthday);
+
+          let items = document.querySelectorAll(
+            "td.stammdaten > table > tbody > tr > td"
+          );
+
+          let objElement = new obj();
+          let baseURI = items[0].baseURI;
+          let start = baseURI.lastIndexOf("-") + 1;
+          let end = baseURI.indexOf(".html");
+          let fupa_id = baseURI.substring(start, end);
+          objElement.fupa_id = fupa_id;
+
+          for (let i = 0; i < items.length; i++) {
+            let element = items[i];
+            let j = i;
+            if (element.innerHTML === "Geburtsdatum:") {
+              objElement.geburtsdatum = items[j + 1].innerHTML;
+              results.push(objElement);
+            }
+          }
+          return results;
+        });
+        results.push(birthday);
+      }
+      resolve(results);
     } catch (e) {
       resolve(e);
     }
