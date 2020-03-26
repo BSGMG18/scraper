@@ -164,9 +164,12 @@ const birthdayScraper = arr => {
           for (let i = 0; i < items.length; i++) {
             let element = items[i];
             let j = i;
+            let regExDate = /[0-9][0-9].[0-9][0-9].[0-9][0-9][0-9][0-9]/;
             if (element.innerHTML === "Geburtsdatum:") {
-              objElement.geburtsdatum = items[j + 1].innerHTML;
-              results.push(objElement);
+              if (items[j + 1].innerHTML.slice(0, 10).match(regExDate)) {
+                objElement.geburtsdatum = items[j + 1].innerHTML;
+                results.push(objElement);
+              }
             }
           }
           return results;
